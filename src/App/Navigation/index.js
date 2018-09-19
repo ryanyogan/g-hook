@@ -45,7 +45,7 @@ class OrganizationSearch extends Component {
   };
 
   render() {
-    const { organizationName } = this.props;
+    const { organizationName } = this.state;
 
     return (
       <div className="Navigation-search">
