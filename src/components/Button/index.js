@@ -18,4 +18,17 @@ const Button = ({
   </button>
 );
 
+const ButtonUnobtrusive = ({
+  children,
+  className,
+  type = 'button',
+  ...props
+}) => (
+  <Button className={`${className} Button_unobtrusive`} type={type} {...props}>
+    {children}
+  </Button>
+);
+
+export { ButtonUnobtrusive };
+
 export default Button;
