@@ -49,6 +49,7 @@ const Organization = ({ organizationName }) => (
           loading={loading}
           repositories={organization.repositories}
           fetchMore={fetchMore}
+          entry="organization"
         />
       );
     }}
