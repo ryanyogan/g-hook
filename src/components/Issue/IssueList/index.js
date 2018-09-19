@@ -72,7 +72,7 @@ const Issues = ({
         query={GET_ISSUES_OF_REPOSITORY}
         variables={{ repositoryName, repositoryOwner, issueState }}
       >
-        {({ data, loading, error }) => {
+        {({ data, loading, error, fetchMore }) => {
           if (error) {
             return <ErrorMessage error={error} />;
           }
@@ -87,40 +87,41 @@ const Issues = ({
             return <div className="IssueList">No issues ...</div>;
           }
 
-          return <IssueList issues={repository.issues} />;
+          return (
+            <IssueList
+              loading={loading}
+              repositoryOwner={repositoryOwner}
+              repositoryName={repositoryName}
+              issueState={issueState}
+              fetchMore={fetchMore}
+              issues={repository.issues}
+            />
+          );
         }}
       </Query>
     )}
   </div>
 );
 
-const IssueList = ({ issues }) => (
+const IssueList = ({
+  issues,
+  loading,
+  repositoryName,
+  repositoryOwner,
+  issueState,
+  fetchMore,
+}) => (
   <div className="IssueList">
     {issues.edges.map(({ node }) => (
-      <IssueItem key={node.id} issue={node} />
+      <IssueItem
+        repositoryOwner={repositoryOwner}
+        repositoryName={repositoryName}
+        key={node.id}
+        issue={node}
+      />
     ))}
   </div>
 );
-
-const prefetchIssues = (
-  client,
-  repositoryOwner,
-  repositoryName,
-  issueState,
-) => {
-  const nextIssueState = TRANSITION_STATE[issueState];
-
-  if (isShow(nextIssueState)) {
-    client.query({
-      query: GET_ISSUES_OF_REPOSITORY,
-      variables: {
-        repositoryOwner,
-        repositoryName,
-        issueState: nextIssueState,
-      },
-    });
-  }
-};
 
 const IssueFilter = ({
   issueState,
@@ -144,6 +145,26 @@ const IssueFilter = ({
     )}
   </ApolloConsumer>
 );
+
+const prefetchIssues = (
+  client,
+  repositoryOwner,
+  repositoryName,
+  issueState,
+) => {
+  const nextIssueState = TRANSITION_STATE[issueState];
+
+  if (isShow(nextIssueState)) {
+    client.query({
+      query: GET_ISSUES_OF_REPOSITORY,
+      variables: {
+        repositoryOwner,
+        repositoryName,
+        issueState: nextIssueState,
+      },
+    });
+  }
+};
 
 export default withState('issueState', 'onChangeIssueState', ISSUE_STATES.NONE)(
   Issues,
